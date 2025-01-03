@@ -31,16 +31,20 @@ jobs:
       # Step 4: Deploy to Hugging Face using huggingface_hub
       - name: Deploy model to Hugging Face
         run: |
-          python -m pip install huggingface_hub
+          # Install huggingface_hub
+          pip install huggingface_hub
 
-          # Set the Hugging Face token
+          # Set the Hugging Face token from GitHub secrets
           hf_token="${{ secrets.huggingtoken }}"
 
           # Log in to Hugging Face (this authenticates your token)
           python -c "from huggingface_hub import login; login(token='${hf_token}')"
 
-          # Push the model to Hugging Face Space 'firstspace'
-          python -c "from huggingface_hub import upload_folder; upload_folder(
-              repo_id='hassan30khawaja/firstspace',  # Use your Hugging Face Space name here
-              folder_path='./',  # Path to your model files
-              token='${hf_token}'  # Hugging Face token for auth
+          # Upload model and app files to Hugging Face Space 'firstspace'
+          python -c "
+from huggingface_hub import upload_folder;
+upload_folder(
+    repo_id='hassan30khawaja/firstspace',  # Your Hugging Face Space name
+    folder_path='./',  # Path to your model and app files (use './' if in root directory)
+    token='${hf_token}'  # Hugging Face token for authentication
+)"
