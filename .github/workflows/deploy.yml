@@ -27,10 +27,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          
-      # Step 4: Deploy model to Hugging Face (you may need to use Hugging Face CLI or API)
-      - name: Deploy to Hugging Face
+
+      # Step 4: Deploy to Hugging Face using huggingface_hub
+      - name: Deploy model to Hugging Face
         run: |
-          hf_token=$(echo ${{ secrets.HUGGINGFACE_TOKEN }})
-          hf-cli repo create mlops4-model --private
-          hf-cli repo push . --repo-id mlops4-model --token $hf_token
+          python -m pip install huggingface_hub
+
+          # Set the Hugging Face token
+          hf_token="${{ secrets.huggingtoken }}"
+
+          # Log in to Hugging Face (this authenticates your token)
+          python -c "from huggingface_hub import login; login(token='${hf_token}')"
+
+          # Push the model to Hugging Face Space 'firstspace'
+          python -c "from huggingface_hub import upload_folder; upload_folder(
+              repo_id='hassan30khawaja/firstspace',  # Use your Hugging Face Space name here
+              folder_path='./',  # Path to your model files
+              token='${hf_token}'  # Hugging Face token for auth
