@@ -1,0 +1,36 @@
+name: Deploy ML Model to Hugging Face
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the 'main' branch
+  pull_request:
+    branches:
+      - main  # Trigger on PR to 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8  # You can choose a specific version if needed
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          
+      # Step 4: Deploy model to Hugging Face (you may need to use Hugging Face CLI or API)
+      - name: Deploy to Hugging Face
+        run: |
+          hf_token=$(echo ${{ secrets.HUGGINGFACE_TOKEN }})
+          hf-cli repo create mlops4-model --private
+          hf-cli repo push . --repo-id mlops4-model --token $hf_token
